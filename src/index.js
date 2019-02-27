@@ -5,6 +5,27 @@
 const socketClient = {
 	status: 'uninitialized',
 	reconnectTime: 1200,
+	on: function(eventName, func){
+		const eventArrName = `on_${eventName}`;
+
+		socketClient[eventArrName] = socketClient[eventArrName] || [];
+
+		socketClient[eventArrName].push(func);
+	},
+	triggerEvent: function(type, evt){
+		if(!evt){
+			evt = type;
+			type = evt.type;
+		}
+
+		var eventName = `on_${type}`;
+
+		if(!socketClient[eventName]) return;
+
+		for(var x = 0, count = socketClient[eventName].length; x < count; ++x){
+			socketClient[eventName][x].call(socketClient, evt);
+		}
+	},
 	init: function(slug){
 		socketClient.slug = slug;
 
@@ -52,21 +73,5 @@ const socketClient = {
 		if(socketClient.status !== 'open') return log(`[socketClient] is ${socketClient.status}`);
 
 		socketClient.ws.send(JSON.stringify({ type, payload }));
-	},
-	on: function(eventName, func){
-		const eventArrName = `on_${eventName}`;
-
-		socketClient[eventArrName] = socketClient[eventArrName] || [];
-
-		socketClient[eventArrName].push(func);
-	},
-	triggerEvent: function(evt){
-		var eventName = `on_${evt.type}`;
-
-		if(!socketClient[eventName]) return;
-
-		for(var x = 0, count = socketClient[eventName].length; x < count; ++x){
-			socketClient[eventName][x].apply(null, evt);
-		}
-	},
+	}
 };
