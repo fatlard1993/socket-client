@@ -45,6 +45,18 @@ const socketClient = {
 
 		socketClient.ws.addEventListener('message', function(evt){
 			socketClient.triggerEvent(evt);
+
+			if(evt.data){
+				try{
+					var data = JSON.parse(evt.data);
+
+					socketClient.triggerEvent(data.type, data.payload);
+				}
+
+				catch(e){
+					log.warn('Could not parse socket data', evt.data, e);
+				}
+			}
 		});
 
 		socketClient.ws.addEventListener('close', function(evt){
