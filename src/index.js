@@ -54,7 +54,7 @@ const socketClient = {
 				}
 
 				catch(e){
-					log.warn('Could not parse socket data', evt.data, e);
+					log.warn()('[socketClient] Could not parse socket data', evt.data, e);
 				}
 			}
 		});
@@ -73,7 +73,7 @@ const socketClient = {
 		if(socketClient.reconnection_TO) return;
 
 		socketClient.reconnection_TO = setTimeout(function(){
-			log('[socketClient] Attempting reconnection... ');
+			log()('[socketClient] Attempting reconnection... ');
 
 			socketClient.reconnection_TO = null;
 			socketClient.reconnectTime += 800;
@@ -82,7 +82,7 @@ const socketClient = {
 		}, socketClient.reconnectTime);
 	},
 	reply: function(type, payload){
-		if(socketClient.status !== 'open') return log(`[socketClient] is ${socketClient.status}`);
+		if(socketClient.status !== 'open') return log()(`[socketClient] is ${socketClient.status}`);
 
 		socketClient.ws.send(JSON.stringify({ type, payload }));
 	}
