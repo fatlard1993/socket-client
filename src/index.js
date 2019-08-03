@@ -4,7 +4,7 @@
 
 const socketClient = {
 	status: 'uninitialized',
-	reconnectTime: 1200,
+	reconnectTime: 0,
 	on: function(eventName, func){
 		const eventArrName = `on_${eventName}`;
 
@@ -32,9 +32,11 @@ const socketClient = {
 		socketClient.ws = new WebSocket(`ws://${window.location.hostname}:${window.location.port || 80}${slug || '/api'}`);
 
 		socketClient.ws.addEventListener('open', function(evt){
+			log()('[socketClient] Connected');
+
 			socketClient.status = 'open';
 
-			socketClient.reconnectTime = 1500;
+			socketClient.reconnectTime = 0;
 
 			socketClient.triggerEvent(evt);
 		});
@@ -73,7 +75,7 @@ const socketClient = {
 		if(socketClient.reconnection_TO) return;
 
 		socketClient.reconnection_TO = setTimeout(function(){
-			log()('[socketClient] Attempting reconnection... ');
+			log()('[socketClient] Attempting reconnection');
 
 			socketClient.reconnection_TO = null;
 			socketClient.reconnectTime += 800;
