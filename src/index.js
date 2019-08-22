@@ -86,6 +86,8 @@ const socketClient = {
 	reply: function(type, payload){
 		if(socketClient.status !== 'open') return log()(`[socketClient] is ${socketClient.status}`);
 
+		log(3)(`[socketClient] reply ${type} ${payload}`);
+
 		socketClient.ws.send(JSON.stringify({ type, payload }));
 	}
 };
