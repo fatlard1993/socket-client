@@ -29,7 +29,7 @@ const socketClient = {
 	init: function(slug){
 		socketClient.slug = slug;
 
-		socketClient.ws = new WebSocket(`ws://${window.location.hostname}:${window.location.port || 80}${slug || '/api'}`);
+		socketClient.ws = new WebSocket(`ws://${window.location.hostname.replace('localhost', '127.0.0.1')}:${window.location.port || 80}${slug || '/api'}`);
 
 		socketClient.ws.addEventListener('open', function(evt){
 			log()('[socketClient] Connected');
