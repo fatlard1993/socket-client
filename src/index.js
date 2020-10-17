@@ -1,8 +1,7 @@
-// includes log
-// babel
-/* global log */
+import Log from 'log';
 
 const socketClient = {
+	log: new Log({ tag: 'socket-client' }),
 	status: 'uninitialized',
 	reconnectTime: 0,
 	on: function(eventName, func){
@@ -32,7 +31,7 @@ const socketClient = {
 		socketClient.ws = new WebSocket(`ws://${window.location.hostname.replace('localhost', '127.0.0.1')}:${window.location.port || 80}${slug || '/api'}`);
 
 		socketClient.ws.addEventListener('open', function(evt){
-			log()('[socketClient] Connected');
+			socketClient.log()('[socketClient] Connected');
 
 			socketClient.status = 'open';
 
@@ -56,7 +55,7 @@ const socketClient = {
 				}
 
 				catch(e){
-					log.warn()('[socketClient] Could not parse socket data', evt.data, e);
+					socketClient.log.warn()('[socketClient] Could not parse socket data', evt.data, e);
 				}
 			}
 		});
@@ -75,7 +74,7 @@ const socketClient = {
 		if(socketClient.reconnection_TO) return;
 
 		socketClient.reconnection_TO = setTimeout(function(){
-			log()('[socketClient] Attempting reconnection');
+			socketClient.log()('[socketClient] Attempting reconnection');
 
 			socketClient.reconnection_TO = null;
 			socketClient.reconnectTime += 800;
@@ -84,10 +83,12 @@ const socketClient = {
 		}, socketClient.reconnectTime);
 	},
 	reply: function(type, payload){
-		if(socketClient.status !== 'open') return log()(`[socketClient] is ${socketClient.status}`);
+		if(socketClient.status !== 'open') return socketClient.log()(`[socketClient] is ${socketClient.status}`);
 
-		log(3)(`[socketClient] reply ${type} ${payload}`);
+		socketClient.log(3)(`[socketClient] reply ${type} ${payload}`);
 
 		socketClient.ws.send(JSON.stringify({ type, payload }));
 	}
 };
+
+if(typeof module === 'object') module.exports = socketClient;
