@@ -48,15 +48,13 @@ const socketClient = {
 			socketClient.triggerEvent(evt);
 
 			if(evt.data){
-				try{
-					var data = JSON.parse(evt.data);
+				let data;
 
-					socketClient.triggerEvent(data.type, data.payload);
-				}
+				try{ data = JSON.parse(evt.data); }
 
-				catch(e){
-					socketClient.log.warn()('Could not parse socket data', evt.data, e);
-				}
+				catch(err){ return socketClient.log.warn()('Could not parse socket data', evt.data, err); }
+
+				socketClient.triggerEvent(data.type, data.payload);
 			}
 		});
 
