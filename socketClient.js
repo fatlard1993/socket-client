@@ -27,10 +27,11 @@ const socketClient = {
 			socketClient[eventName][x].call(socketClient, evt);
 		}
 	},
-	init: slug => {
+	init: (slug, port) => {
 		socketClient.slug = slug;
+		socketClient.port = port;
 
-		socketClient.ws = new WebSocket(`ws://${window.location.hostname.replace('localhost', '127.0.0.1')}:${window.location.port || 80}${slug || '/api'}`);
+		socketClient.ws = new WebSocket(`ws://${window.location.hostname.replace('localhost', '127.0.0.1')}:${port || window.location.port || 80}${slug || '/api'}`);
 
 		socketClient.ws.addEventListener('open', evt => {
 			log()('Connected');
