@@ -6,12 +6,26 @@ const socketClient = {
 	log,
 	status: 'uninitialized',
 	reconnectTime: 0,
+	eventListeners: {},
 	on: (eventName, func) => {
 		const eventArrName = `on_${eventName}`;
 
-		socketClient[eventArrName] = socketClient[eventArrName] || [];
+		socketClient.eventListeners[eventArrName] = socketClient.eventListeners[eventArrName] || [];
 
-		socketClient[eventArrName].push(func);
+		socketClient.eventListeners[eventArrName].push(func);
+	},
+	off: (eventName, func) => {
+		const eventArrName = `on_${eventName}`;
+
+		if (!socketClient.eventListeners[eventArrName]) return;
+
+		socketClient.eventListeners[eventArrName] = socketClient.eventListeners[eventArrName].filter(evt => evt !== func);
+	},
+	clearEventListeners: eventName => {
+		const eventArrName = `on_${eventName}`;
+
+		if (eventName) socketClient.eventListeners[eventArrName] = [];
+		else socketClient.eventListeners = {};
 	},
 	triggerEvent: (type, evt) => {
 		if (!evt) {
@@ -21,10 +35,10 @@ const socketClient = {
 
 		const eventName = `on_${type}`;
 
-		if (!socketClient[eventName]) return;
+		if (!socketClient.eventListeners[eventName]) return;
 
-		for (let x = 0, count = socketClient[eventName].length; x < count; ++x) {
-			socketClient[eventName][x].call(socketClient, evt);
+		for (let x = 0, count = socketClient.eventListeners[eventName].length; x < count; ++x) {
+			socketClient.eventListeners[eventName][x].call(socketClient, evt);
 		}
 	},
 	init: (slug, port) => {
