@@ -1,8 +1,18 @@
 {
 	"name": "socket-client",
 	"version": "3.2.0",
-	"main": "socketClient.js",
-	"description": "A js ESM WebSocket library",
+	"type": "module",
+	"exports": {
+		"./package.json": "./package.json",
+		".": "./socketClient.js"
+	},
+	"files": [
+		"/socketClient.js"
+	],
+	"engines": {
+		"node": ">=16.0.0"
+	},
+	"description": "An ESM JS WebSocket Client Library",
 	"author": "justfatlard",
 	"license": "ISC",
 	"scripts": {
@@ -19,19 +29,11 @@
 		"url": "https://github.com/fatlard1993/socket-client/issues"
 	},
 	"homepage": "https://github.com/fatlard1993/socket-client#readme",
-	"dependencies": {
-		"log": "github:fatlard1993/log"
-	},
+	"dependencies": {},
 	"devDependencies": {
-		"eslint": "^8.2.0",
-		"eslint-config-prettier": "^8.3.0",
-		"eslint-plugin-cypress": "^2.12.1",
-		"eslint-plugin-prettier": "^4.0.0",
-		"husky": "^7.0.4",
-		"lint-staged": "^12.0.1",
-		"prettier": "2.4.1"
-	},
-	"lint-staged": {
-		"**/*": "prettier --write --ignore-unknown"
+		"eslint": "^8.27.0",
+		"eslint-config-prettier": "^8.5.0",
+		"eslint-plugin-prettier": "^4.2.1",
+		"prettier": "2.7.1"
 	}
 }

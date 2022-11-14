@@ -1,9 +1,4 @@
-import { Log } from 'log';
-
-const log = new Log({ tag: 'socket-client' });
-
 const socketClient = {
-	log,
 	status: 'uninitialized',
 	reconnectTime: 0,
 	eventListeners: {},
@@ -48,8 +43,6 @@ const socketClient = {
 		socketClient.ws = new WebSocket(`ws://${window.location.hostname.replace('localhost', '127.0.0.1')}:${port || window.location.port || 80}${slug || '/api'}`);
 
 		socketClient.ws.addEventListener('open', evt => {
-			log()('Connected');
-
 			socketClient.status = 'open';
 
 			socketClient.reconnectTime = 0;
@@ -70,7 +63,7 @@ const socketClient = {
 				try {
 					data = JSON.parse(evt.data);
 				} catch (err) {
-					return log.warn()('Could not parse socket data', evt.data, err);
+					return;
 				}
 
 				socketClient.triggerEvent(data.type, data.payload);
@@ -91,18 +84,31 @@ const socketClient = {
 		if (socketClient.reconnection_TO) return;
 
 		socketClient.reconnection_TO = setTimeout(() => {
-			log()('Attempting reconnection');
-
 			socketClient.reconnection_TO = null;
 			socketClient.reconnectTime += 800;
 
 			socketClient.init(socketClient.slug);
 		}, socketClient.reconnectTime);
 	},
-	reply: (type, payload) => {
-		if (socketClient.status !== 'open') return log()(`is ${socketClient.status}`);
+	stayConnected() {
+		if (socketClient.status === 'open') return;
 
-		log(3)(`reply ${type} ${payload}`);
+		let reload = 'soft';
+
+		if (reload === 'soft' && socketClient.triedSoftReload) reload = 'hard';
+
+		if (reload === 'hard') return window.location.reload(false);
+
+		socketClient.reconnect();
+
+		socketClient.triedSoftReload = true;
+
+		socketClient.resetSoftReset_TO = setTimeout(() => {
+			socketClient.triedSoftReload = false;
+		}, 4000);
+	},
+	reply: (type, payload) => {
+		if (socketClient.status !== 'open') return;
 
 		socketClient.ws.send(JSON.stringify({ type, payload }));
 	},
